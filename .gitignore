@@ -1,0 +1,5 @@
+deploy/staging/supervisord.conf
+deploy/staging/*.service
+deploy/fabfile.py
+.env
+__pycache__/*

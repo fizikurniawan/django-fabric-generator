@@ -1,0 +1,13 @@
+[Unit]
+Description=Daemon for {{APP_NAME}}
+Documentation=http://docs.{{PROJECT_GROUP}}
+After=network.target
+
+[Service]
+Type=forking
+ExecStart={{DEPLOY_WORK_DIR}}/venv/bin/supervisord -c {{APP_ROOT}}/deploy/staging/supervisord.conf
+ExecReload={{DEPLOY_WORK_DIR}}/venv/bin/supervisorctl -c {{APP_ROOT}}/deploy/staging/supervisord.conf reload
+ExecStop={{DEPLOY_WORK_DIR}}/venv/bin/supervisorctl -c {{APP_ROOT}}/deploy/staging/supervisord.conf shutdown
+
+[Install]
+WantedBy=multi-user.target
