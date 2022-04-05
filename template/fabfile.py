@@ -51,7 +51,7 @@ def staging():
 
     env.deploy_work_dir = f"{env.project_root}{env.project_name}"
     env.project_env = f"{env.deploy_work_dir}/venv/"
-    env.app_root = env.deploy_work_dir + env.env.project_group
+    env.app_root = env.deploy_work_dir + "/" + env.project_group
     env.systemd = "{}/deploy/{}/{}.service".format(
         env.app_root, env.folder, env.project_name
     )
@@ -73,13 +73,9 @@ def restart_service():
 
 
 def preparing_dir():
-    if not f.exists(env.project_root):
+    if not f.exists(env.app_root):
         print(green("Creating project directory..."))
-        _sudo(f"mkdir -p {env.project_root}")
-
-    # create deploy_work_dir
-    if not f.exists(env.deploy_work_dir):
-        _sudo(f"mkdir -p {env.deploy_work_dir}")
+        _sudo(f"mkdir -p {env.app_root}")
 
     # change owner workdir with user deployer
     change_owner_cmd = f"chown -R {env.user}:{env.user} {env.project_root}"
@@ -140,7 +136,11 @@ def clone_repo():
     _run(
         "source {}bin/activate && cd {} \
           && git clone -b {} {} {}".format(
-            env.project_env, env.app_root, env.branch_name, repo_url, env.project_group
+            env.project_env,
+            env.deploy_work_dir,
+            env.branch_name,
+            repo_url,
+            env.project_group,
         )
     )
 
@@ -159,7 +159,7 @@ def copy_local_settings():
     if f.exists(env.app_root + "project/local_settings.py"):
         _run("rm {}project/local_settings.py ".format(env.app_root))
 
-    put(env.local_settings, "{}project/local_settings.py".format(env.app_root))
+    put(env.local_settings, "{}/project/local_settings.py".format(env.app_root))
 
 
 def create_systemd_file():
